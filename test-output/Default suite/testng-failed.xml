@@ -5,8 +5,9 @@
     <classes>
       <class name="TestCases.FunctionalityTesting_Flights">
         <methods>
-          <include name="ValidValueFlightSearch" invocation-numbers="1 2 3 4"/>
+          <include name="FlightSearchwithDynamicValues" invocation-numbers="1 2 3 4"/>
           <include name="AddScreenshotInReport"/>
+          <include name="getpopup"/>
           <include name="LaunchBrowser"/>
           <include name="Teardown"/>
         </methods>

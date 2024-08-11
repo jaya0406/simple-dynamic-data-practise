@@ -27,7 +27,7 @@ public class sample {
 		driver.findElement(By.cssSelector("span[data-cy='closeModal']")).click();	
 		
 		//from
-		  Thread.sleep(2000);
+		Thread.sleep(2000);
 		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.cssSelector("label[for='fromCity']")))).click();
 		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div//li[contains(@id,'react-autowhatever-1-section')][last()]")));
@@ -62,17 +62,22 @@ public class sample {
 		   }
 	   }
 	   
-	//depature date
-	   List<WebElement>getMonths= driver.findElements(By.xpath("//div[@class='datePickerContainer']//div[@class='DayPicker-Months']//div[@class='DayPicker-Month']"));
+	//Departure date
 	   
+	   String month="November 2024";
+	   String three= month.substring(0, 3);
+	  // String getthree = three.toString();
+
+	   List<WebElement>getMonths= driver.findElements(By.xpath("//div[@class='datePickerContainer']//div[@class='DayPicker-Months']//div[@class='DayPicker-Month']"));
+	    
 	   for(WebElement Eachmonth : getMonths)
 	   {
 		   String monthtext = Eachmonth.findElement(By.className("DayPicker-Caption")).getText();
 		   //System.out.println(monthtext);
 		   
-		   if(monthtext.equalsIgnoreCase("September 2024"))
+		   if(monthtext.equalsIgnoreCase(month))
 		   {
-			   List<WebElement>getdate = driver.findElements(By.xpath("//div[contains(@class, 'DayPicker-Day') and contains(@aria-label, 'Sep') and contains(@aria-disabled,'false')]"));
+			   List<WebElement>getdate = driver.findElements(By.xpath("//div[contains(@class, 'DayPicker-Day') and contains(@aria-label, ' " + three + "') and contains(@aria-disabled,'false')]"));
 		   
 			   for(WebElement eachgetdate: getdate )
 			   {
@@ -86,19 +91,39 @@ public class sample {
 				   }
 			   }
 		   }
+		   
+		   else
+		   {
+			   wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("span[aria-label^='Next']")));
+			   driver.findElement(By.cssSelector("span[aria-label^='Next']")).click();
+			   
+			   List<WebElement>getdate = driver.findElements(By.xpath("//div[contains(@class, 'DayPicker-Day') and contains(@aria-label, ' " + three + "') and contains(@aria-disabled,'false')]"));
+			   
+			   for(WebElement eachgetdate: getdate )
+			   {
+				   String getdatetext =eachgetdate.findElement(By.tagName("p")).getText();
+				   //System.out.println(getdatetext);
+				   
+				   if(getdatetext.equalsIgnoreCase("11"))
+				   {
+					   eachgetdate.click();
+					   break;
+				   }
+			   }
+			   
+		   }
 	   }
 	    
 	   //travellers
 	   wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.cssSelector("label[for='travellers']")))).click();
 	 //  int Age=15;
-	   int Adcount =2;
+	   String Adcount ="2";
 	   List<WebElement> getadult=driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'adults-')]"));
 		   
 		   for(WebElement EachAdult :getadult )   
 		   {
 			   String gettext = EachAdult.getText();
-			   int getad = Integer.parseInt(gettext);
-			   if(getad==(Adcount))
+			   if(gettext.contains(Adcount))
 			   {
 				   EachAdult.click();
 				   break;

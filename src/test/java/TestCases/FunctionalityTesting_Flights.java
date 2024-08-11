@@ -7,6 +7,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.Status;
@@ -23,23 +24,30 @@ public class FunctionalityTesting_Flights extends Driver
 	public String ValidValuesExcpectedResult ="NETWORK PROBLEM";
 	
 	@BeforeSuite
-	public void LaunchBrowser() throws Exception
+	public void LaunchBrowser() throws IOException 
 	{
 		Openbrowser();
-		
-		String URL = PropertyFileRead.propertyread().getProperty("url").toString();
-		driver.get(URL);
 	}
 
+	@BeforeTest
+	public void getpopup() throws Exception
+	{
+
+		String URL = PropertyFileRead.propertyread().getProperty("url").toString();
+		driver.get(URL);
+		
+		FlightSearchPage fsp = new FlightSearchPage(driver);
+		fsp.ClosePopUp();	
+	}
 	
 	
 	@Test(priority=0,dataProvider="GetValiddatas",dataProviderClass=GetDataProvider.class)
-	public void ValidValueFlightSearch(String From, String To , String Date , String Monthyr, String Faretype) throws Exception
+	public void FlightSearchwithDynamicValues
+	(String From, String To , String Date , String Monthyr ,String adultCount,String childCount, String infantCount, String Classtype) throws Exception
 	{
 		test=extents.createTest("Valid Value FlightSearch - One Way");
 
 		FlightSearchPage fsp = new FlightSearchPage(driver);
-		
 		fsp.clickfrom();
 		fsp.GetFromlocation(From);
 		test.log(Status.INFO, "Select From Location");
@@ -48,11 +56,16 @@ public class FunctionalityTesting_Flights extends Driver
 		fsp.GetToLocation(To);
 		test.log(Status.INFO, "Select To Location");
 		
-		fsp.SelectDepaturedate(Date, Monthyr);
+		fsp.selectDepartureDate(Date, Monthyr);
 		test.log(Status.INFO, "Select Depature Date");
 		
-		fsp.getTravellers(2, 3, 2, 1, 1);//Adult count, Child Age, Child count, Infant Age, Infant count
-		fsp.SelectTravelClass(Faretype);
+		
+		fsp.clicktravelsandclass();
+		fsp.GetAdultcount(adultCount);
+		fsp.GetChildcount(childCount);
+		fsp.getInfantcount(infantCount);
+		
+		fsp.SelectTravelClass(Classtype);
 		fsp.TravellersAndClassApply();
 		test.log(Status.INFO, "Select Travellers and Class");
 		
@@ -64,6 +77,10 @@ public class FunctionalityTesting_Flights extends Driver
 		
 		SearchresultPage srp = new SearchresultPage(driver);
 		Assert.assertEquals(ValidValuesExcpectedResult, srp.getResult());//Comparing result
+		
+		String Filepath = Elements.GetScreenshot(driver, "FlightSearch_" + From + "_" + To + "_" + Date);
+        test.log(Status.INFO, test.addScreenCaptureFromPath(Filepath).toString());
+        
 		driverBackButton();
 	}
 	
@@ -84,7 +101,8 @@ public class FunctionalityTesting_Flights extends Driver
 				test.log(Status.FAIL,"Test Method FAIL: "+result.getName()+"is FAILED");
 				test.log(Status.FAIL,"Test failure : "+ result.getThrowable());
 			}
-			else if(result.getStatus()==ITestResult.SKIP)
+			else
+				if(result.getStatus()==ITestResult.SKIP)
 			{
 				String Filepath = Elements.GetScreenshot(driver, result.getName());
 				test.log(Status.INFO,test.addScreenCaptureFromPath(Filepath).toString());
@@ -94,7 +112,7 @@ public class FunctionalityTesting_Flights extends Driver
 	}
 	
 	@AfterSuite
-	public void Teardown()
+	public void Teardown() throws InterruptedException
 	{
 		CloseBrowser();
 	}

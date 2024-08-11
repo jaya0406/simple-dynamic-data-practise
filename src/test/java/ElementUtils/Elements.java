@@ -31,7 +31,7 @@ public class Elements
 		{
 			return Element.getText();
 		}
-		return null;
+		return "";
 	}
 
 	public static void SentKeys(WebElement Element,String gettext)
@@ -51,12 +51,11 @@ public class Elements
 	}
 	
 
-	public static void WaitTillClickable(WebDriver driver, WebElement eachGetfromlist)
+	public static void WaitTillClickable(WebDriver driver, WebElement Elements)
 	{
 		WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(60));
 		
-		wait.until(ExpectedConditions.elementToBeClickable(eachGetfromlist));
-		
+		wait.until(ExpectedConditions.elementToBeClickable(Elements));
 	}
 	
 	public static void WaitTillVisible(WebDriver driver, By Element)

@@ -16,26 +16,32 @@ public class FlightSearchPage
 	public FlightSearchPage(WebDriver driver)
 	{
 		this.driver=driver;
-		PageFactory.initElements(this.driver, driver);
+		PageFactory.initElements(this.driver, this);
 	}
 	
-	
+	//CLOSE POP-UP
 	public void ClosePopUp() throws Exception
 	{
-		//Elements.WaitTillClickable(driver,driver.findElement(By.cssSelector("span[data-cy='closeModal']")));
-		Elements.Click(driver, driver.findElement(By.cssSelector("span[data-cy='closeModal']")));
+		Thread.sleep(1000);
+		WebElement popup = driver.findElement(By.cssSelector("span[data-cy='closeModal']"));
+		Elements.WaitTillClickable(driver, popup);
+		Elements.Click(driver, popup);
 	}
-	
 
+	//CLICK FROM LOCATION
 	public void clickfrom() throws InterruptedException
 	{
-		Elements.WaitTillClickable(driver,driver.findElement(By.cssSelector("label[for='fromCity']")));
-		Elements.Click(driver, driver.findElement(By.cssSelector("label[for='fromCity']")));
+		Thread.sleep(1000);
+		WebElement clicfrm =  driver.findElement(By.cssSelector("label[for='fromCity']"));
+		Elements.WaitTillClickable(driver,clicfrm);
+		Elements.Click(driver, clicfrm);
 	}
 	
+	
+	//SELECT FROM LOCATION
 	public void GetFromlocation(String from) throws InterruptedException
 	{
-		Elements.WaitTillClickable(driver,driver.findElement(By.xpath("//div//li[contains(@id,'react-autowhatever-1-section')][last()]")));
+		Elements.WaitTillVisible(driver,By.xpath("//div//li[contains(@id,'react-autowhatever-1-section')][last()]"));
 		
 		List<WebElement> GetfromList = driver.findElements(By.xpath("//div//li[contains(@id,'react-autowhatever-1-section')]"));
 		
@@ -51,13 +57,15 @@ public class FlightSearchPage
 			}
 		}
 	}
-
+	
+	//CLICK TO LOCATION
 	public void clickto() throws InterruptedException
 	{
 		Elements.WaitTillClickable(driver, driver.findElement( By.cssSelector("label[for='toCity']")));
 		Elements.Click(driver, driver.findElement(By.cssSelector("label[for='toCity']")));
 	}
 	
+	//SELECT TO LOCATION
 	public void GetToLocation(String to) throws Exception
 	{
 		Elements.WaitTillVisible(driver,By.xpath("//div//li[contains(@id,'react-autowhatever-1-section')][last()]"));
@@ -78,50 +86,60 @@ public class FlightSearchPage
 	}
 	
 	
-	public void SelectDepaturedate(String date, String monthAndyr  ) throws InterruptedException
+	//SELECT DEPATURE DATE
+	public void selectDepartureDate(String date, String monthAndYear) throws InterruptedException 
 	{
-		List<WebElement>getMonths= driver.findElements(By.xpath("//div[@class='DayPicker-Months']//div[@class='DayPicker-Month']"));
-		   
-		   for(WebElement Eachmonth : getMonths)
-		   {
-			   String monthtext = Eachmonth.findElement(By.className("DayPicker-Caption")).getText();
-			   
-			   if(monthtext.equalsIgnoreCase(monthAndyr))
-			   {
-				   List<WebElement>getdate = driver.findElements(By.xpath("//div[contains(@class, 'DayPicker-Day') and contains(@aria-label, 'Sep') and contains(@aria-disabled,'false')]"));
-			   
-				   for(WebElement eachgetdate: getdate )
-				   {
-					   String getdatetext =eachgetdate.findElement(By.tagName("p")).getText();
-					   //System.out.println(getdatetext);
-					   
-					   if(getdatetext.equalsIgnoreCase(date))
-					   {
-						   Elements.WaitTillClickable(driver, eachgetdate);
-						   Elements.Click(driver, eachgetdate);
-						   break;
-					   }
-				   }
-			   }
-		   }
+	    String monthAbbreviation = monthAndYear.substring(0, 3);
+	    By monthCaptionLoc = By.xpath("//div[@class='datePickerContainer']//div[@class='DayPicker-Caption']");
+	    WebElement nextMonthButtonLocator = driver.findElement(By.cssSelector("span[aria-label^='Next']"));
+	    By dayLocator = By.xpath("//div[contains(@class, 'DayPicker-Day') and contains(@aria-label, '" + monthAbbreviation + "') and contains(@aria-disabled,'false')]");
+
+	    while (true) 
+	    {
+	        WebElement monthCaption = driver.findElement(monthCaptionLoc);
+	        Elements.WaitTillVisible(driver, monthCaptionLoc);
+	        String currentMonth = monthCaption.getText();
+	        
+	        if (currentMonth.equalsIgnoreCase(monthAndYear)) 
+	        {
+	            List<WebElement> days = driver.findElements(dayLocator);
+	            for (WebElement day : days) 
+	            {
+	                String dayText = day.findElement(By.tagName("p")).getText();
+	               
+	                if (dayText.equalsIgnoreCase(date)) 
+	                {
+	                    Elements.WaitTillClickable(driver, day);
+	                    Elements.Click(driver, day);
+	                    return;
+	                }
+	            }
+	        }
+	        else 
+	        {
+	            Elements.WaitTillClickable(driver, nextMonthButtonLocator);
+	            Elements.Click(driver, nextMonthButtonLocator);
+	        }
+	    }
 	}
 	
+	//SELECTING TRAVELLERS
 	
-	
-	public void getTravellers( int getAdultcount , int getChildAge  , int getChildcount , int getinftantage , int getInfantcount) throws InterruptedException
+	public void clicktravelsandclass() throws InterruptedException
 	{
-		Elements.WaitTillVisible(driver,By.cssSelector("label[for='travellers']"));
-		
-		Elements.Click(driver, driver.findElement(By.cssSelector("label[for='travellers']")));
-		
-		
-		//To Select Adult Travelers
+		WebElement clicktravellers = driver.findElement(By.xpath("//div[@data-cy='flightTraveller']//label[@for='travellers']"));
+		Elements.Click(driver, clicktravellers);
+	}
+	
+	//ADULT
+	public void GetAdultcount( String getAdultcount) throws InterruptedException
+	{
 		 List<WebElement> getadult=driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'adults-')]"));
 		   
 		   for(WebElement EachAdult :getadult )   
 		   {
-			   int Getadult = Integer.parseInt(EachAdult.getText());
-			   if(Getadult==(getAdultcount))
+			   String gettext = EachAdult.getText();
+			   if(gettext.contains(getAdultcount))
 			   {
 				   Elements.WaitTillClickable(driver, EachAdult);
 				   Elements.Click(driver, EachAdult);
@@ -129,42 +147,35 @@ public class FlightSearchPage
 			   }
 		   }
 		   
-		   //To Select Child and Infants
-		   if(getChildAge>2)
-			{
-				   List<WebElement> getachild =driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'children-')]"));
+	}
+	
+	public void GetChildcount( String getChildcount) throws InterruptedException
+	{
+		    List<WebElement> getachild =driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'children-')]"));
 				   
 				   for(WebElement Eachgetachild :getachild )   
 				   {
 					   String gettext = Eachgetachild.getText();
-					   int getnum = Integer.parseInt(gettext);
 					   
-					   if(getnum==getChildcount)
+					   if(gettext.contains(getChildcount))
 					   {
 						   Elements.WaitTillClickable(driver, Eachgetachild);
 						   Elements.Click(driver, Eachgetachild);
 						   break;
 					   }
 				   }
-				   
-			}
-			
-		   else
-			{
-				System.out.println("Please select under INFANTS if AGE is less than 2yrs.");
-			}
-		   
-		   
-		   if(getinftantage<2)
-		   {
-			   List<WebElement> getainftant =driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'infants-')]"));
+	}
+	
+	
+	public void getInfantcount(String getInfantcount) throws InterruptedException
+	{
+		   List<WebElement> getainftant =driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'infants-')]"));
 			   
 			   for(WebElement Eachgetgetainftant :getainftant )   
 			   {
 				   String gettext = Eachgetgetainftant.getText();
-				   int getnum = Integer.parseInt(gettext);
 				   
-				   if(getnum==getInfantcount)
+				   if(gettext.contains(getInfantcount))
 				   {
 					   Elements.WaitTillClickable(driver, Eachgetgetainftant);
 					   Elements.Click(driver, Eachgetgetainftant);
@@ -172,12 +183,12 @@ public class FlightSearchPage
 				   }
 			   }
 			   
-		   }
 	}
+	
 	
 	public void SelectTravelClass(String TravelClass) throws InterruptedException
 	{
-		Elements.WaitTillVisible(driver, By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'travelClass-')][last()]"));
+		Elements.WaitTillClickable(driver, driver.findElement(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'travelClass-')][last()]")));
 		List<WebElement> classlist =driver.findElements(By.xpath("//div[@class='appendBottom20']//li[contains(@data-cy,'travelClass-')]"));
 		
 		for(WebElement Eachclass : classlist)
@@ -206,7 +217,7 @@ public class FlightSearchPage
 		
 		for(WebElement eachfare : Fare)
 		{
-			String gettext = eachfare.findElement(By.xpath("//div[contains(@class,'appendBottom3')]")).getText();
+			String gettext = eachfare.findElement(By.cssSelector("div.appendBottom3")).getText();
 			if(gettext.equalsIgnoreCase(faretype))
 			{
 				Elements.WaitTillClickable(driver, eachfare);

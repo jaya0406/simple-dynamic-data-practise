@@ -41,8 +41,8 @@ public class Driver
 	
 	public void driverBackButton() throws InterruptedException
 	{
-		Thread.sleep(1000);
 		driver.navigate().back();
+		Thread.sleep(1000);
 	}
 	
 	public void generateReport()
@@ -57,8 +57,9 @@ public class Driver
 		extents.flush();
 	}
 	
-	public void CloseBrowser()
+	public void CloseBrowser() throws InterruptedException
 	{
+		
 		savereport();
 		driver.close();
 	}
